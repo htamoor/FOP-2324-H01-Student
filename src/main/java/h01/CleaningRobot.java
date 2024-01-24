@@ -3,6 +3,7 @@ package h01;
 import fopbot.Direction;
 import fopbot.Robot;
 import h01.template.Cleaner;
+import h01.template.GameConstants;
 import h01.template.TickBased;
 import org.tudalgo.algoutils.student.Student;
 
@@ -25,7 +26,40 @@ public class CleaningRobot extends Robot implements Cleaner, TickBased {
 
     @Override
     public void handleKeyInput(final int direction, final boolean shouldPutCoins, final boolean shouldPickCoins) {
-        // TODO: H1
-        Student.crash("H1 - remove if implemented");
+        if (shouldPutCoins && hasAnyCoins()) {
+            putCoin();
+        }
+        if (shouldPickCoins && isOnACoin() && getNumberOfCoins() < GameConstants.CLEANER_CAPACITY) {
+            pickCoin();
+        }
+        if (direction >= 0 && direction < 4) {
+            if (shouldPutCoins && hasAnyCoins()) {
+                putCoin();
+            }
+            if (shouldPickCoins && isOnACoin() && getNumberOfCoins() < GameConstants.CLEANER_CAPACITY) {
+                pickCoin();
+            }
+            if (direction >= 0 && direction < 4) {
+                // start with direction 0 (UP)
+                int dx = 0;
+                int dy = 1;
+                // rotate direction times by 90 degrees to the right
+                for (int i = 0; i < direction; i++) {
+                    final int tmp = dx;
+                    dx = dy;
+                    dy = -tmp;
+                }
+                while (getDirection().getDx() != dx || getDirection().getDy() != dy) {
+                    turnLeft();
+                }
+                if (isFrontClear()) {
+                    move();
+                }
+            }
+
+        }
+
     }
+
+
 }

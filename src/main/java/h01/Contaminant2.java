@@ -5,6 +5,7 @@ import fopbot.Robot;
 import fopbot.RobotFamily;
 import h01.template.Contaminant;
 import h01.template.TickBased;
+import h01.template.Utils;
 import org.tudalgo.algoutils.student.Student;
 
 /**
@@ -31,7 +32,72 @@ public class Contaminant2 extends Robot implements Contaminant, TickBased {
 
     @Override
     public void doMove() {
-        // TODO: H2.2
-        Student.crash("H2.2 - remove if implemented");
+
+        // 1.
+        if (!hasAnyCoins()) {
+            turnOff();
+            return;
+        }
+
+        // 2.
+        if (isTurnedOff() || !hasAnyCoins()) {
+            return;
+        }
+
+        // 3.
+        if (!isOnACoin() || Utils.getCoinAmount(getX(), getY()) < 2) {
+            for (int i = 0; i < 2; i++) {
+                if (!hasAnyCoins() || Utils.getCoinAmount(getX(), getY()) >= 2) {
+                    break;
+                }
+                putCoin();
+            }
+        }
+
+        // 4.
+        Direction left = null;
+        Direction back = null;
+        Direction right = null;
+        Direction front = null;
+        int validPathsCount = 0;
+        for (int i = 0; i < 4; i++) {
+            turnLeft();
+            if (isFrontClear()) {
+                if (i == 0) {
+                    left = getDirection();
+                } else if (i == 1) {
+                    back = getDirection();
+                } else if (i == 2) {
+                    right = getDirection();
+                } else {
+                    front = getDirection();
+                }
+                validPathsCount++;
+            }
+        }
+        // check if there are any valid paths
+        if (validPathsCount == 0) {
+            return;
+        }
+        // 5. orient on left wall
+        Direction direction = null;
+        if (left != null) {
+            direction = left;
+        } else if (front != null) {
+            direction = front;
+        } else if (right != null) {
+            direction = right;
+        } else if (back != null) {
+            direction = back;
+        }
+        while (getDirection() != direction) {
+            turnLeft();
+        }
+
+        // 6
+        if (isFrontClear()) {
+            move();
+        }
+
     }
 }
